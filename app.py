@@ -1,9 +1,9 @@
 import google.generativeai as genai
 from flask import Flask, render_template, request, jsonify
-
+import os  # Add this import to work with environment variables
 
 def run(text_input, user_api_key):
-    genai.configure(api_key="AIzaSyBhs9H_3HSIGmS0bmayLIFe4pd-fNS_m10")
+    genai.configure(api_key=user_api_key)  # Use the passed API key
 
     # Create the model
     generation_config = {
@@ -36,8 +36,15 @@ def index():
 @app.route('/get_response', methods=['POST'])
 def get_response():
     user_input = request.json.get('message')
+    
+    # Get the API key from the environment variable
+    api_key = os.getenv('API_KEY')  # This will fetch the API_KEY environment variable
+
+    if not api_key:
+        return jsonify({"response": "API_KEY not found"}), 500  # Handle missing API key
+
     try:
-        response_text = run(user_input, api)
+        response_text = run(user_input, api_key)  # Pass the API key here
         return jsonify({"response": response_text})
     except Exception as e:
         return jsonify({"response": f"Error: {str(e)}"}), 500
