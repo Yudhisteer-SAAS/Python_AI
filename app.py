@@ -1,10 +1,6 @@
 import google.generativeai as genai
 from flask import Flask, render_template, request, jsonify
-from dotenv import load_dotenv
-import os  # Import to access environment variables
 
-# Load environment variables from the system or a .env file (useful for local testing)
-load_dotenv()
 
 def run(text_input, user_api_key):
     genai.configure(api_key="AIzaSyBhs9H_3HSIGmS0bmayLIFe4pd-fNS_m10")
@@ -35,13 +31,6 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template('index.html')
-
-# --------------------------HERE----------------------------------------
-# Fetch API key from environment variables
-api = 
-
-if not api:
-    raise ValueError("API_KEY is not set. Make sure to add it as a repository secret or variable.")
 
 
 @app.route('/get_response', methods=['POST'])
