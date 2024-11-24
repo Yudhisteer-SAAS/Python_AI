@@ -1,60 +1,49 @@
-// script.js
 document.addEventListener("DOMContentLoaded", () => {
-  const chatContainer = document.querySelector(".chat-container");
-  const inputBox = document.querySelector("#chat-input");
-  const sendButton = document.querySelector("#send-btn");
+    const chatHistory = document.getElementById("chat-history");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
 
-  const addMessageToChat = (message, sender) => {
-    const messageElement = document.createElement("div");
-    messageElement.classList.add("chat-message", sender);
-    chatContainer.appendChild(messageElement);
+    const addMessage = (message, sender) => {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("chat-message", sender);
+        chatHistory.appendChild(messageDiv);
 
-    // Apply typing animation
-    let i = 0;
-    const isBold = message.startsWith("**") && message.endsWith("**");
-    const formattedMessage = isBold
-      ? `<strong style="font-size: 1.2em;">${message.slice(2, -2)}</strong><br>`
-      : message;
+        let i = 0;
+        const isBold = message.startsWith("**") && message.endsWith("**");
+        const formattedMessage = isBold
+            ? `<strong>${message.slice(2, -2)}</strong><br>`
+            : message;
 
-    function type() {
-      if (i < formattedMessage.length) {
-        messageElement.innerHTML += formattedMessage[i++];
-        setTimeout(type, 40); // Speed of typing animation
-      } else if (isBold) {
-        messageElement.innerHTML += "<br>"; // Add line break after bold text
-      }
-    }
-    type();
+        const type = () => {
+            if (i < formattedMessage.length) {
+                messageDiv.innerHTML += formattedMessage[i++];
+                setTimeout(type, 40); // Typing speed
+            }
+        };
+        type();
 
-    // Scroll to the bottom
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  };
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    };
 
-  const sendMessage = () => {
-    const userMessage = inputBox.value.trim();
-    if (!userMessage) return;
+    const sendMessage = () => {
+        const message = userInput.value.trim();
+        if (!message) return;
 
-    // Add user message
-    addMessageToChat(userMessage, "user");
-    inputBox.value = "";
+        addMessage(message, "user");
+        userInput.value = "";
 
-    // Simulate API call
-    fetch("/get_response", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        const aiMessage = data.response || "No response received!";
-        addMessageToChat(aiMessage, "ai");
-      })
-      .catch(() => addMessageToChat("Error fetching response.", "ai"));
-  };
+        fetch("/get_response", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message }),
+        })
+            .then((response) => response.json())
+            .then((data) => addMessage(data.response, "ai"))
+            .catch(() => addMessage("Error: Unable to fetch response.", "ai"));
+    };
 
-  // Send message on button click or Enter key press
-  sendButton.addEventListener("click", sendMessage);
-  inputBox.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
 });
