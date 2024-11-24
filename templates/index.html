@@ -8,15 +8,22 @@
 </head>
 <body>
     <div class="chat-container">
+        <!-- Header Section -->
         <div class="chat-header">
             <h2>Chatbot</h2>
         </div>
+
+        <!-- Chat History Section -->
         <div id="chat-history" class="chat-history"></div>
+
+        <!-- Input Section -->
         <div class="chat-input">
             <input type="text" id="user-input" placeholder="Type your message..." />
             <button id="send-btn">Send</button>
         </div>
     </div>
+
+    <!-- Include JavaScript -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
