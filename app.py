@@ -7,7 +7,7 @@ import os  # Import to access environment variables
 load_dotenv()
 
 def run(text_input, user_api_key):
-    genai.configure(api_key=user_api_key)
+    genai.configure(api_key="AIzaSyBhs9H_3HSIGmS0bmayLIFe4pd-fNS_m10")
 
     # Create the model
     generation_config = {
@@ -38,7 +38,7 @@ def index():
 
 # --------------------------HERE----------------------------------------
 # Fetch API key from environment variables
-api = os.getenv("API_KEY")
+api = 
 
 if not api:
     raise ValueError("API_KEY is not set. Make sure to add it as a repository secret or variable.")
