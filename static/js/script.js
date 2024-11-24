@@ -1,42 +1,60 @@
+// script.js
 document.addEventListener("DOMContentLoaded", () => {
-    const chatHistory = document.getElementById("chat-history");
-    const userInput = document.getElementById("user-input");
-    const sendBtn = document.getElementById("send-btn");
+  const chatContainer = document.querySelector(".chat-container");
+  const inputBox = document.querySelector("#chat-input");
+  const sendButton = document.querySelector("#send-btn");
 
-    // Function to append messages with animation and alignment
-    const appendMessage = (message, sender) => {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", sender);
-        messageDiv.textContent = message;
+  const addMessageToChat = (message, sender) => {
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("chat-message", sender);
+    chatContainer.appendChild(messageElement);
 
-        // Add message to chat history
-        chatHistory.appendChild(messageDiv);
-        chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll to the latest message
-    };
+    // Apply typing animation
+    let i = 0;
+    const isBold = message.startsWith("**") && message.endsWith("**");
+    const formattedMessage = isBold
+      ? `<strong style="font-size: 1.2em;">${message.slice(2, -2)}</strong><br>`
+      : message;
 
-    // Handle message sending
-    const sendMessage = async () => {
-        const message = userInput.value.trim();
-        if (!message) return;
+    function type() {
+      if (i < formattedMessage.length) {
+        messageElement.innerHTML += formattedMessage[i++];
+        setTimeout(type, 40); // Speed of typing animation
+      } else if (isBold) {
+        messageElement.innerHTML += "<br>"; // Add line break after bold text
+      }
+    }
+    type();
 
-        appendMessage(message, "user"); // Show user's message
-        userInput.value = ""; // Clear input
+    // Scroll to the bottom
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  };
 
-        try {
-            const response = await fetch("/get_response", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message }),
-            });
-            const data = await response.json();
-            appendMessage(data.response, "bot"); // Show bot's response
-        } catch (error) {
-            appendMessage("Error: Unable to fetch response from server.", "bot");
-        }
-    };
+  const sendMessage = () => {
+    const userMessage = inputBox.value.trim();
+    if (!userMessage) return;
 
-    sendBtn.addEventListener("click", sendMessage);
-    userInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") sendMessage();
-    });
+    // Add user message
+    addMessageToChat(userMessage, "user");
+    inputBox.value = "";
+
+    // Simulate API call
+    fetch("/get_response", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const aiMessage = data.response || "No response received!";
+        addMessageToChat(aiMessage, "ai");
+      })
+      .catch(() => addMessageToChat("Error fetching response.", "ai"));
+  };
+
+  // Send message on button click or Enter key press
+  sendButton.addEventListener("click", sendMessage);
+  inputBox.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
 });
