@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify
 import os  # Add this import to work with environment variables
 
 def run(text_input):
-    genai.configure(api_key="AIzaSyBhs9H_3HSIGmS0bmayLIFe4pd-fNS_m10")  # Use the passed API key
+    genai.configure(api_key="AIzaSyB7r4tMrDHwBVL6MIPAWNEdiR3R-GY-c0s")  # Use the passed API key
 
     # Create the model
     generation_config = {
